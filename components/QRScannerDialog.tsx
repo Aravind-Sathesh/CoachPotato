@@ -112,7 +112,7 @@ export function QRScannerDialog({ onTicketsParsed }: QRScannerDialogProps) {
         </Button>
       </DialogTrigger>
 
-      <DialogContent className='sm:max-w-md bg-zinc-950 border-zinc-800 p-0 overflow-hidden shadow-2xl shadow-black'>
+      <DialogContent className='w-[90vw] max-w-sm rounded-[24px] bg-zinc-950 border-zinc-800 p-0 overflow-hidden shadow-2xl shadow-black'>
         <DialogHeader className='p-4 pb-2 bg-zinc-950/80 absolute top-0 left-0 right-0 z-10 backdrop-blur-sm border-b border-white/5'>
           <DialogTitle className='text-zinc-100 flex items-center justify-between'>
             <span>{step === 'scan' ? 'Add Ticket' : 'Select Passengers'}</span>
@@ -163,13 +163,7 @@ export function QRScannerDialog({ onTicketsParsed }: QRScannerDialogProps) {
 
                 {/* Custom Viewfinder Overlay */}
                 <div className='absolute inset-0 pointer-events-none flex flex-col items-center justify-center z-20'>
-                  <div
-                    className='relative w-64 h-64 border-2 border-dashed border-blue-500/80 rounded-3xl z-30 shadow-[0_0_0_9999px_rgba(0,0,0,0.5)]'
-                    style={{
-                      boxShadow: 'none',
-                    }}
-                  ></div>
-
+                  <div className='mt-56'></div>
                   <p className='mt-12 text-zinc-300 text-sm font-medium relative z-30 shadow-black drop-shadow-md bg-black/40 px-3 py-1 rounded-full backdrop-blur-md border border-white/10'>
                     Point your camera at the QR code
                   </p>
