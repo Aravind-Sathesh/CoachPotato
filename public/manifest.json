@@ -1,6 +1,6 @@
 {
-  "name": "CoachPotato",
-  "short_name": "CoachPotato",
+  "name": "Coach Potato",
+  "short_name": "Coach Potato",
   "description": "IRCTC e-ticket manager",
   "start_url": "/",
   "display": "standalone",
