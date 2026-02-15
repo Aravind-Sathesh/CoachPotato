@@ -121,7 +121,7 @@ export function QRScannerDialog({ onTicketsParsed }: QRScannerDialogProps) {
               <div className='flex bg-zinc-900 rounded-full p-1 border border-zinc-800'>
                 <button
                   onClick={() => setMode('scan')}
-                  className={`p-1.5 rounded-full transition-colors ${mode === 'scan' ? 'bg-zinc-800 text-yellow-400' : 'text-zinc-500 hover:text-zinc-300'}`}
+                  className={`p-1.5 rounded-full transition-colors ${mode === 'scan' ? 'bg-zinc-800 text-blue-400' : 'text-zinc-500 hover:text-zinc-300'}`}
                 >
                   <Camera className='w-4 h-4' />
                 </button>
@@ -145,6 +145,8 @@ export function QRScannerDialog({ onTicketsParsed }: QRScannerDialogProps) {
                     <Scanner
                       onScan={handleScan}
                       onError={(error) => console.error(error)}
+                      // @ts-ignore - audio is not in latest types but might work
+                      audio={false}
                       components={{
                         onOff: true,
                         torch: true,
@@ -161,29 +163,14 @@ export function QRScannerDialog({ onTicketsParsed }: QRScannerDialogProps) {
 
                 {/* Custom Viewfinder Overlay */}
                 <div className='absolute inset-0 pointer-events-none flex flex-col items-center justify-center z-20'>
-                  <div className='absolute inset-0 bg-black/50'></div>
-
                   <div
-                    className='relative w-64 h-64 border-2 border-dashed border-red-500/50 rounded-3xl z-30'
+                    className='relative w-64 h-64 border-2 border-dashed border-blue-500/80 rounded-3xl z-30 shadow-[0_0_0_9999px_rgba(0,0,0,0.5)]'
                     style={{
-                      boxShadow: '0 0 0 9999px rgba(0, 0, 0, 0.5)',
+                      boxShadow: 'none',
                     }}
-                  >
-                    {/* Corners */}
-                    <div className='absolute top-[-2px] left-[-2px] w-8 h-8 border-t-4 border-l-4 border-red-500 rounded-tl-xl'></div>
-                    <div className='absolute top-[-2px] right-[-2px] w-8 h-8 border-t-4 border-r-4 border-red-500 rounded-tr-xl'></div>
-                    <div className='absolute bottom-[-2px] left-[-2px] w-8 h-8 border-b-4 border-l-4 border-red-500 rounded-bl-xl'></div>
-                    <div className='absolute bottom-[-2px] right-[-2px] w-8 h-8 border-b-4 border-r-4 border-red-500 rounded-br-xl'></div>
+                  ></div>
 
-                    {/* Camera Icon Marker */}
-                    <div className='absolute -right-16 top-1/2 -translate-y-1/2'>
-                      <div className='bg-yellow-500/20 p-3 rounded-full border border-yellow-500 animate-pulse'>
-                        <Camera className='w-5 h-5 text-yellow-500' />
-                      </div>
-                    </div>
-                  </div>
-
-                  <p className='mt-12 text-zinc-300 text-sm font-medium relative z-30 shadow-black drop-shadow-md'>
+                  <p className='mt-12 text-zinc-300 text-sm font-medium relative z-30 shadow-black drop-shadow-md bg-black/40 px-3 py-1 rounded-full backdrop-blur-md border border-white/10'>
                     Point your camera at the QR code
                   </p>
                 </div>
