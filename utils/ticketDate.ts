@@ -57,23 +57,23 @@ export function parseTicketDate(dateStr: string): Date | null {
 
 export function buildGoogleCalendarUrl(ticket: Ticket): string | null {
   const journeyDate = parseDateOnly(ticket.dateOfJourney);
+
   if (!journeyDate) {
     return null;
   }
 
-  const eventTitle = `#${ticket.trainNumber} - ${ticket.from} \u2192 ${ticket.to}`;
-  const eventDetails = `PNR: ${ticket.pnr}\n\n${ticket.seatBerth || ''}`.trim();
+  const eventTitle = `#${ticket.trainNumber} - ${ticket.from} to ${ticket.to}`;
+  // \n needs to be escaped literally for ICS formatting
+  const eventDetails =
+    `PNR: ${ticket.pnr}\\n\\n${ticket.seatBerth || ''}`.trim();
   const eventLocation = ticket.from;
-
-  const calendarUrl = new URL('https://calendar.google.com/calendar/render');
-  calendarUrl.searchParams.set('action', 'TEMPLATE');
-  calendarUrl.searchParams.set('text', eventTitle);
-  calendarUrl.searchParams.set('details', eventDetails);
-  calendarUrl.searchParams.set('location', eventLocation);
 
   const departureTime = ticket.departureTime
     ? parseDepartureTime(ticket.departureTime)
     : null;
+
+  let startStr = '';
+  let endStr = '';
 
   if (departureTime) {
     const startDateTime = new Date(journeyDate);
@@ -100,19 +100,25 @@ export function buildGoogleCalendarUrl(ticket: Ticket): string | null {
       endDateTime = addHours(startDateTime, 1);
     }
 
-    calendarUrl.searchParams.set(
-      'dates',
-      `${format(startDateTime, "yyyyMMdd'T'HHmmss")}/${format(
-        endDateTime,
-        "yyyyMMdd'T'HHmmss",
-      )}`,
-    );
+    startStr = format(startDateTime, "yyyyMMdd'T'HHmmss");
+    endStr = format(endDateTime, "yyyyMMdd'T'HHmmss");
   } else {
-    calendarUrl.searchParams.set(
-      'dates',
-      `${format(journeyDate, 'yyyyMMdd')}/${format(addDays(journeyDate, 1), 'yyyyMMdd')}`,
-    );
+    startStr = format(journeyDate, 'yyyyMMdd');
+    endStr = format(addDays(journeyDate, 1), 'yyyyMMdd');
   }
 
-  return calendarUrl.toString();
+  const icsData = [
+    'BEGIN:VCALENDAR',
+    'VERSION:2.0',
+    'BEGIN:VEVENT',
+    `DTSTART:${startStr}`,
+    `DTEND:${endStr}`,
+    `SUMMARY:${eventTitle}`,
+    `DESCRIPTION:${eventDetails}`,
+    `LOCATION:${eventLocation}`,
+    'END:VEVENT',
+    'END:VCALENDAR',
+  ].join('\n');
+
+  return `data:text/calendar;charset=utf8,${encodeURIComponent(icsData)}`;
 }

@@ -77,10 +77,11 @@ export function TicketCard({ ticket, onDelete }: TicketCardProps) {
               {calendarUrl ? (
                 <a
                   href={calendarUrl}
+                  download={`${ticket.trainNumber}-ticket.ics`}
                   target='_blank'
                   rel='noreferrer'
-                  aria-label={`Add ${ticket.trainName} on ${ticket.dateOfJourney} to Google Calendar`}
-                  title='Add to Google Calendar'
+                  aria-label={`Add ${ticket.trainName} on ${ticket.dateOfJourney} to Calendar`}
+                  title='Add to Calendar'
                   className='inline-flex items-center gap-1.5 text-sm font-medium text-zinc-400 transition-colors hover:text-zinc-200 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zinc-500 rounded-sm'
                 >
                   <Calendar className='w-3.5 h-3.5' />
