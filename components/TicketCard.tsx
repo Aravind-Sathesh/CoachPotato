@@ -81,13 +81,13 @@ export function TicketCard({ ticket, onDelete }: TicketCardProps) {
                   rel='noreferrer'
                   aria-label={`Add ${ticket.trainName} on ${ticket.dateOfJourney} to Google Calendar`}
                   title='Add to Google Calendar'
-                  className='inline-flex min-h-9 items-center gap-1.5 rounded-full border border-blue-500/15 bg-blue-500/10 px-3 py-2 text-sm font-semibold text-blue-100 transition-colors hover:bg-blue-500/15 active:bg-blue-500/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/40'
+                  className='inline-flex items-center gap-1.5 text-sm font-medium text-zinc-400 transition-colors hover:text-zinc-200 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zinc-500 rounded-sm'
                 >
                   <Calendar className='w-3.5 h-3.5' />
                   <span>{ticket.dateOfJourney}</span>
                 </a>
               ) : (
-                <span className='inline-flex items-center gap-1.5 rounded-full bg-zinc-800 px-3 py-2 text-sm font-semibold text-zinc-300'>
+                <span className='inline-flex items-center gap-1.5 text-sm font-medium text-zinc-400'>
                   <Calendar className='w-3.5 h-3.5' />
                   <span>{ticket.dateOfJourney}</span>
                 </span>

@@ -61,18 +61,20 @@ export function QRScannerDialog({ onTicketsParsed }: QRScannerDialogProps) {
 
       const enrichedTickets = await Promise.all(
         tickets.map(async (ticket) => {
-          try {
-            const res = await fetch(`/api/pnr/${ticket.pnr}`);
-            if (res.ok) {
-              const arrivalInfo = await res.json();
-              ticket.arrivalDate = arrivalInfo.arrivalDate;
-              ticket.arrivalTime = arrivalInfo.arrivalTime;
+          if (typeof navigator !== 'undefined' && navigator.onLine) {
+            try {
+              const res = await fetch(`/api/pnr/${ticket.pnr}`);
+              if (res.ok) {
+                const arrivalInfo = await res.json();
+                ticket.arrivalDate = arrivalInfo.arrivalDate;
+                ticket.arrivalTime = arrivalInfo.arrivalTime;
+              }
+            } catch (err) {
+              console.error(
+                `Failed to fetch arrival info for PNR ${ticket.pnr}`,
+                err,
+              );
             }
-          } catch (err) {
-            console.error(
-              `Failed to fetch arrival info for PNR ${ticket.pnr}`,
-              err,
-            );
           }
           return ticket;
         }),
