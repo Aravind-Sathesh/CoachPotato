@@ -59,23 +59,28 @@ export function parseQRData(text: string): Ticket[] {
     let coach = '';
     let seatBerth = '';
 
-    // Check for CNF followed by Coach, /, Seat, Berth
-    const statusMatch = status.match(/^CNF([A-Z0-9]+)\/(\d+)([A-Z]+)$/i);
-    if (statusMatch) {
-      coach = statusMatch[1];
-      seatBerth = `${statusMatch[2]} (${statusMatch[3]})`;
-    } else {
-      // Fallback or other status like WL
-      // Try simple split if it contains /
-      if (status.includes('/')) {
-        const parts = status.split('/');
-        // This part is tricky without more samples.
-        // Assume last part is seat/berth if numeric?
-        // Let's just store the whole status if format doesn't match
-        seatBerth = status;
+    // Match patterns like CNFB8/52, CNFB8/52MB, CNF/B8/52
+    const cnfMatch = status.match(/^CNF\/?([A-Z0-9]+)\/(\d+)([A-Z]*)$/i);
+
+    if (cnfMatch) {
+      coach = cnfMatch[1];
+      seatBerth = cnfMatch[3]
+        ? `${cnfMatch[2]} (${cnfMatch[3].toUpperCase()})`
+        : cnfMatch[2];
+    } else if (status.toUpperCase().startsWith('CNF')) {
+      // Fallback for irregular CNF formats
+      const cleanStatus = status.substring(3).replace(/^\/+/, '');
+      const parts = cleanStatus.split('/');
+
+      if (parts.length >= 2) {
+        coach = parts[0];
+        seatBerth = parts.slice(1).join(' ');
       } else {
-        seatBerth = status;
+        seatBerth = cleanStatus || status;
       }
+    } else {
+      // Fallback for WL, RAC, or unhandled statuses
+      seatBerth = status;
     }
 
     tickets.push({
@@ -92,6 +97,8 @@ export function parseQRData(text: string): Ticket[] {
       seatBerth,
       passengerName: name,
       uploadedAt: new Date().toISOString(),
+      arrivalDate: undefined,
+      arrivalTime: undefined,
     });
   }
 

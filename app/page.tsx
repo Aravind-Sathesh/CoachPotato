@@ -7,6 +7,7 @@ import { TicketList } from '@/components/TicketList';
 import { SkeletonLoader } from '@/components/SkeletonLoader';
 import { Button } from '@/components/ui/button';
 import { QRScannerDialog } from '@/components/QRScannerDialog';
+import { parseTicketDate } from '@/utils/ticketDate';
 
 const STORAGE_KEY = 'tickets';
 
@@ -130,46 +131,12 @@ export default function Page() {
         ) : (
           <TicketList
             tickets={[...tickets].sort((a, b) => {
-              // Helper to parse "DD-MMM-YYYY" (e.g. 25-Mar-2026) or ISO
-              const parseDate = (d: string) => {
-                if (!d) return 0;
-                const parts = d.match(
-                  /^(\d{1,2})[-/]([A-Za-z]{3})[-/](\d{4})$/,
-                );
-                if (parts) {
-                  const months: Record<string, number> = {
-                    Jan: 0,
-                    Feb: 1,
-                    Mar: 2,
-                    Apr: 3,
-                    May: 4,
-                    Jun: 5,
-                    Jul: 6,
-                    Aug: 7,
-                    Sep: 8,
-                    Oct: 9,
-                    Nov: 10,
-                    Dec: 11,
-                  };
-                  const m =
-                    months[
-                      parts[2].charAt(0).toUpperCase() +
-                        parts[2].slice(1).toLowerCase()
-                    ];
-                  if (m !== undefined)
-                    return new Date(
-                      parseInt(parts[3]),
-                      m,
-                      parseInt(parts[1]),
-                    ).getTime();
-                }
-                return new Date(d).getTime();
-              };
-
-              const tA = parseDate(a.dateOfJourney);
-              const tB = parseDate(b.dateOfJourney);
-              if (isNaN(tA)) return 1;
-              if (isNaN(tB)) return -1;
+              const tA =
+                parseTicketDate(a.dateOfJourney)?.getTime() ??
+                Number.POSITIVE_INFINITY;
+              const tB =
+                parseTicketDate(b.dateOfJourney)?.getTime() ??
+                Number.POSITIVE_INFINITY;
               return tA - tB;
             })}
             onDelete={handleDelete}

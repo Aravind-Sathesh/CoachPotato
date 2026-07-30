@@ -49,7 +49,7 @@ export function QRScannerDialog({ onTicketsParsed }: QRScannerDialogProps) {
     processData(manualInput);
   };
 
-  const processData = (data: string) => {
+  const processData = async (data: string) => {
     try {
       const tickets = parseQRData(data);
       if (tickets.length === 0) {
@@ -57,11 +57,32 @@ export function QRScannerDialog({ onTicketsParsed }: QRScannerDialogProps) {
         return;
       }
 
-      setScannedTickets(tickets);
-      // Select all by default
-      setSelectedIds(new Set(tickets.map((t) => t.id)));
+      const loadingToastId = toast.loading('Fetching arrival information...');
+
+      const enrichedTickets = await Promise.all(
+        tickets.map(async (ticket) => {
+          try {
+            const res = await fetch(`/api/pnr/${ticket.pnr}`);
+            if (res.ok) {
+              const arrivalInfo = await res.json();
+              ticket.arrivalDate = arrivalInfo.arrivalDate;
+              ticket.arrivalTime = arrivalInfo.arrivalTime;
+            }
+          } catch (err) {
+            console.error(
+              `Failed to fetch arrival info for PNR ${ticket.pnr}`,
+              err,
+            );
+          }
+          return ticket;
+        }),
+      );
+
+      toast.dismiss(loadingToastId);
+      setScannedTickets(enrichedTickets);
+      setSelectedIds(new Set(enrichedTickets.map((t) => t.id)));
       setStep('select');
-      toast.success(`Found ${tickets.length} passengers`);
+      toast.success(`Found ${enrichedTickets.length} passengers`);
     } catch (error) {
       console.error('Error parsing QR data:', error);
       toast.error('Failed to parse QR data');

@@ -19,6 +19,8 @@ export interface Ticket {
   seatBerth: string;
   passengerName: string;
   uploadedAt: string;
+  arrivalDate?: string;
+  arrivalTime?: string;
 }
 
 async function extractTextFromPDF(file: File): Promise<string> {
